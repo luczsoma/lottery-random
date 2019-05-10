@@ -1,0 +1,173 @@
+{
+  "$id": "https://github.com/luczsoma/lottery-random/blob/master/config.schema.py",
+  "$schema": "http://json-schema.org/schema#",
+  "title": "lottery-random configuration file schema",
+  "description": "Your supplied config.json file for lottery-random must comply with this schema.",
+  "type": "object",
+  "properties": {
+    "random_org_api_key": {
+      "title": "random.org API key",
+      "description": "Your API key for the random.org API. The lottery-random MUST NOT be used with neither the free Developer nor the Non-Profit API key license: visit https://api.random.org/pricing for details.",
+      "type": "string",
+      "minLength": 1
+    },
+    "sendgrid_api_key": {
+      "title": "SendGrid API key",
+      "description": "Your API key for the SendGrid API.",
+      "type": "string",
+      "minLength": 1
+    },
+    "email_from": {
+      "title": "Email from",
+      "description": "This email address will be used as the sender address when emailing the lottery ticket packs.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "title": "Email",
+          "description": "The email address of the sender",
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "title": "Name",
+          "description": "The name of the sender",
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["email", "name"],
+      "additionalProperties": false
+    },
+    "lottery_game_definitions": {
+      "title": "Lottery game definitions",
+      "description": "Define your lottery game definitions here.",
+      "type": "array",
+      "items": {
+        "title": "Lottery game definition",
+        "description": "A lottery game definition describes a type of lottery game in general: with a name and one or more drawing sets with the number of drawn elements from the sets of numbers between min and max.",
+        "type": "object",
+        "properties": {
+          "game_name": {
+            "title": "Game name",
+            "description": "Use this game name in the lottery_ticket_packs section to reference a particular game definition.",
+            "type": "string",
+            "minLength": 1
+          },
+          "drawing_sets": {
+            "title": "Drawing sets",
+            "description": "Define the drawing sets for the lottery game here.",
+            "type": "array",
+            "items": {
+              "title": "Drawing set",
+              "description": "A drawing set is a set of numbers between min and max (inclusive) to draw n unique numbers from.",
+              "type": "object",
+              "properties": {
+                "n": {
+                  "title": "n",
+                  "description": "Draw n unique numbers from the drawing set.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "min": {
+                  "title": "min",
+                  "description": "The lowest possible drawn value.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max": {
+                  "title": "max",
+                  "description": "The highest possible drawn value.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": ["n", "min", "max"],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["game_name", "drawing_sets"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "lottery_ticket_packs": {
+      "title": "Lottery ticket packs",
+      "description": "Define your lottery ticket packs here. A lottery ticket pack is one or more lottery tickets to be played (in any lottery games defined above) containing random numbers, sent to one or more given email addresses.",
+      "type": "array",
+      "items": {
+        "title": "Lottery ticket pack",
+        "description": "A set of lottery tickets with random numbers to be played, sent to one or more email addresses.",
+        "type": "object",
+        "properties": {
+          "email_to": {
+            "title": "Email to",
+            "description": "The lottery ticket pack will be sent to these email addresses.",
+            "type": "array",
+            "items": {
+              "title": "Email to",
+              "description": "An email address where the lottery ticket pack will be sent.",
+              "type": "object",
+              "properties": {
+                "email": {
+                  "title": "Email",
+                  "description": "The email address of the recipient",
+                  "type": "string",
+                  "format": "email"
+                },
+                "name": {
+                  "title": "Name",
+                  "description": "The name of the recipient",
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["email", "name"],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "elements": {
+            "title": "Lottery tickets pack elements",
+            "description": "Define the number of lottery tickets to be played from a given lottery game.",
+            "type": "array",
+            "items": {
+              "title": "Lottery ticket configuration",
+              "description": "Define the number of lottery tickets to be played from a given lottery game.",
+              "type": "object",
+              "properties": {
+                "game_name": {
+                  "title": "Game name",
+                  "description": "The name of the lottery game. Must be the game_name of a defined lottery game definition in lottery_game_definitions above.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "number_of_tickets": {
+                  "title": "Number of tickets",
+                  "description": "The number of tickets to be played in this lottery game.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": ["game_name", "number_of_tickets"],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["email_to", "elements"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "random_org_api_key",
+    "sendgrid_api_key",
+    "email_from",
+    "lottery_game_definitions",
+    "lottery_ticket_packs"
+  ],
+  "additionalProperties": false
+}
