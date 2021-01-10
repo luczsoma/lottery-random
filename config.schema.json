@@ -143,14 +143,38 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "number_of_tickets": {
-                  "title": "Number of tickets",
-                  "description": "The number of tickets to be played in this lottery game.",
+                "number_of_random_tickets": {
+                  "title": "Number of tickets to be randomly generated",
+                  "description": "The number of tickets (to be randomly generated) to be played in this lottery game.",
                   "type": "integer",
                   "minimum": 1
+                },
+                "permanent_tickets": {
+                  "title": "Tickets to be played regularly, with permanent numbers",
+                  "description": "If a player has permanent numbers, it can be configured here, so it will also be sent in email, in addition to the rangomly generated tickets. The given tickets must conform to the game definition, and cannot contain duplicate numbers.",
+                  "type": "array",
+                  "items": {
+                    "title": "Permament ticket",
+                    "description": "A ticket to be played containing permanent numbers.",
+                    "type": "array",
+                    "items": {
+                      "title": "Permanent drawing set",
+                      "description": "A drawing set of a permanent ticket.",
+                      "type": "array",
+                      "items": {
+                        "title": "Permanent number",
+                        "description": "A permanent number to be played in a permanent ticket.",
+                        "type": "number"
+                      }
+                    }
+                  }
                 }
               },
-              "required": ["game_name", "number_of_tickets"],
+              "required": [
+                "game_name",
+                "number_of_random_tickets",
+                "permanent_tickets"
+              ],
               "additionalProperties": false
             },
             "minItems": 1

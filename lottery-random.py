@@ -88,12 +88,12 @@ class LotteryRandom:
         for lottery_ticket_pack in self.config["lottery_ticket_packs"]:
             for element in lottery_ticket_pack["elements"]:
                 game_name = element["game_name"]
-                number_of_tickets = element["number_of_tickets"]
+                number_of_random_tickets = element["number_of_random_tickets"]
 
                 if game_name in tickets_per_game:
-                    tickets_per_game[game_name] += number_of_tickets
+                    tickets_per_game[game_name] += number_of_random_tickets
                 else:
-                    tickets_per_game[game_name] = number_of_tickets
+                    tickets_per_game[game_name] = number_of_random_tickets
 
         return tickets_per_game
 
@@ -105,7 +105,7 @@ class LotteryRandom:
         for each drawing_set for each game for each element for each pack, we iterate through lottery_game_definitions
         and call it only for each summarized drawing_set for each game.
         """
-        filled_drawing_sets_per_game = {}
+        random_filled_drawing_sets_per_game = {}
 
         for game_name in tickets_per_game:
             game_definition = next(
@@ -125,9 +125,9 @@ class LotteryRandom:
 
                 filled_drawing_sets.append(filled_drawing_set)
 
-            filled_drawing_sets_per_game[game_name] = filled_drawing_sets
+            random_filled_drawing_sets_per_game[game_name] = filled_drawing_sets
 
-        return filled_drawing_sets_per_game
+        return random_filled_drawing_sets_per_game
 
     def fill_lottery_ticket_packs_by_drawing_sets(self, filled_drawing_sets_per_game):
         """Returns lottery ticket packs filled with random tickets
@@ -140,31 +140,43 @@ class LotteryRandom:
 
         for lottery_ticket_pack in filled_lottery_ticket_packs:
             for element in lottery_ticket_pack["elements"]:
-                element["tickets"] = []
+                element["random_tickets"] = []
                 filled_drawing_sets_of_game = filled_drawing_sets_per_game[element["game_name"]]
 
-                for i in range(element["number_of_tickets"]):
+                for i in range(element["number_of_random_tickets"]):
                     current_ticket = []
 
                     for filled_drawing_set_of_game in filled_drawing_sets_of_game:
                         current_drawing_set = filled_drawing_set_of_game.pop(0)
                         current_ticket.append(current_drawing_set)
 
-                    element["tickets"].append(current_ticket)
+                    element["random_tickets"].append(current_ticket)
 
         return filled_lottery_ticket_packs
+
+    def merge_random_and_permanent_tickets(self, random_filled_lottery_ticket_packs):
+        """Merges permanent numbers to random numbers, and returns the merged set.
+        """
+        merged_lottery_ticket_packs = deepcopy(random_filled_lottery_ticket_packs)
+
+        for lottery_ticket_pack in merged_lottery_ticket_packs:
+            for element in lottery_ticket_pack["elements"]:
+                element["tickets"] = element["random_tickets"] + element["permanent_tickets"]
+
+        return merged_lottery_ticket_packs;
 
     def fill_lottery_ticket_packs(self):
-        """Fills all lottery tickets with random numbers and returns them
-        in the same way as the configuration file is nested within lottery_ticket_packs.
+        """Fills all lottery tickets with random numbers, merges permanent numbers to them,
+        then returns them in the same way as the configuration file is nested within lottery_ticket_packs.
         """
         tickets_per_game = self.sum_tickets_per_game()
-        filled_drawing_sets_per_game = self.generate_random_filled_drawing_sets_per_game(
+        random_filled_drawing_sets_per_game = self.generate_random_filled_drawing_sets_per_game(
             tickets_per_game)
-        filled_lottery_ticket_packs = self.fill_lottery_ticket_packs_by_drawing_sets(
-            filled_drawing_sets_per_game)
+        random_filled_lottery_ticket_packs = self.fill_lottery_ticket_packs_by_drawing_sets(
+            random_filled_drawing_sets_per_game)
+        merged_lottery_ticket_packs = self.merge_random_and_permanent_tickets(random_filled_lottery_ticket_packs)
 
-        return filled_lottery_ticket_packs
+        return merged_lottery_ticket_packs
 
     def stringify_lottery_ticket_packs(self, filled_tickets):
         """Adds a filled lottery ticket to string
@@ -213,7 +225,7 @@ class LotteryRandom:
                     )
                 )
 
-        subject = "True random lottery numbers for -recipientName-"
+        subject = "Lottery numbers for -recipientName-"
 
         content = f"{subject}" + \
             "\n\n" + \

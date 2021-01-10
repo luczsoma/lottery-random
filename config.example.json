@@ -53,15 +53,30 @@
       "elements": [
         {
           "game_name": "Lottery 5",
-          "number_of_tickets": 1
+          "number_of_random_tickets": 1,
+          "permanent_tickets": [[[3, 27, 42, 54, 87]]]
         },
         {
           "game_name": "Lottery 6",
-          "number_of_tickets": 2
+          "number_of_random_tickets": 2,
+          "permanent_tickets": [
+            [[9, 17, 23, 30, 41, 43]],
+            [[4, 8, 9, 12, 28, 37]]
+          ]
         },
         {
           "game_name": "EuroJackpot",
-          "number_of_tickets": 1
+          "number_of_random_tickets": 1,
+          "permanent_tickets": [
+            [
+              [2, 5, 24, 39, 41],
+              [2, 8]
+            ],
+            [
+              [3, 4, 8, 9, 11],
+              [5, 9]
+            ]
+          ]
         }
       ]
     },
@@ -75,11 +90,13 @@
       "elements": [
         {
           "game_name": "Lottery 5",
-          "number_of_tickets": 2
+          "number_of_random_tickets": 2,
+          "permanent_tickets": []
         },
         {
           "game_name": "Lottery 6",
-          "number_of_tickets": 1
+          "number_of_random_tickets": 1,
+          "permanent_tickets": []
         }
       ]
     }
