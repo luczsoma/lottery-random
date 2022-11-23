@@ -8,9 +8,9 @@
 
 Lottery numbers for John Smith
 
-Lottery 5: (2–5–26–43–87), (3-27-42-54-87)<br>
-Lottery 6: (4–7–18–32–38–39), (1–2–13–27–37–40), (9-17-23-30-41-43), (4-8-9-12-28-37)<br>
-EuroJackpot: (15–20–23–28–44 | 1–8), (2-3-24-39-41 | 2-8), (3-4-8-9-11 | 5-9)<br>
+Lottery 5: [2, 5, 26, 43, 87], [3, 27, 42, 54, 87]<br>
+Lottery 6: [4, 7, 18, 32, 38, 39], [1, 2, 13, 27, 37, 40], [9, 17, 23, 30, 41, 43], [4, 8, 9, 12, 28, 37]<br>
+EuroJackpot: [15, 20, 23, 28, 44 | 1, 8], [2, 3, 24, 39, 41 | 2, 8], [3, 4, 8, 9, 11 | 5, 9]<br>
 
 Timestamp: 2019/05/09 03:25:32 (UTC)
 
@@ -122,7 +122,7 @@ A lottery game definition is the description of a particular lottery game: it de
 E.g. a EuroJackpot ticket consists of two sets of numbers:
 
 - 5 numbers from the [1–50] interval,
-- 2 numbers from the [1-10] interval.
+- 2 numbers from the [1–10] interval.
 
 This can be configured as follows:
 

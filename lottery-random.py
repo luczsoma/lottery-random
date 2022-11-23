@@ -191,13 +191,13 @@ class LotteryRandom:
                 game_name = element["game_name"]
                 tickets = element["tickets"]
 
-                joined = '(' + '), ('.join(
+                joined = '[' + '], ['.join(
                     [' | '.join(
-                        ['–'.join(
+                        [', '.join(
                             [str(x) for x in drawing_set]
                         ) for drawing_set in ticket]
                     ) for ticket in tickets]
-                ) + ')'
+                ) + ']'
 
                 joined_tickets_per_game.append(f"{game_name}: {joined}")
 
