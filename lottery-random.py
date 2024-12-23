@@ -2,22 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from json import load
 from time import sleep
 
 from requests import post
 
 from jsonschema import validate
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, To
+from azure.communication.email import EmailClient
+from azure.core.credentials import AzureKeyCredential
 
 
 class LotteryRandom:
     def __init__(self):
         self.config = self.parse_config()
-        self.sendgrid_api_client = SendGridAPIClient(
-            self.config["sendgrid_api_key"])
+        self.azure_email_client = EmailClient(
+            self.config["azure_email_endpoint"],
+            AzureKeyCredential(self.config["azure_email_key"]),
+        )
         self.random_org_api_url = "https://api.random.org/json-rpc/2/invoke"
         self.last_random_org_api_call = None
 
@@ -26,7 +28,9 @@ class LotteryRandom:
 
         Throws ValidationException or SchemaException if the configuration or the schema is not valid.
         """
-        with open('config.json') as config_json_file, open('config.schema.json') as config_schema_file:
+        with open("config.json") as config_json_file, open(
+            "config.schema.json"
+        ) as config_schema_file:
             config = load(config_json_file)
             config_schema = load(config_schema_file)
             validate(config, config_schema)
@@ -40,43 +44,48 @@ class LotteryRandom:
         """
         # max. 10 requests / sec
         if self.last_random_org_api_call is not None:
-            diff_microseconds = (self.last_random_org_api_call -
-                                 datetime.utcnow()).microseconds
+            diff_microseconds = (
+                self.last_random_org_api_call - datetime.now(timezone.utc)
+            ).microseconds
             if diff_microseconds < 100 * 1000:
                 sleep(diff_microseconds / 1000)
 
-        self.last_random_org_api_call = datetime.utcnow()
+        self.last_random_org_api_call = datetime.now(timezone.utc)
 
-        response = post(self.random_org_api_url, json={
-            "id": "",
-            "jsonrpc": "2.0",
-            "method": "generateIntegerSequences",
-            "params": {
-                "apiKey": self.config["random_org_api_key"],
-                "n": n,
-                "length": length,
-                "min": min,
-                "max": max,
-                "replacement": False,
+        response = post(
+            self.random_org_api_url,
+            json={
+                "id": "",
+                "jsonrpc": "2.0",
+                "method": "generateIntegerSequences",
+                "params": {
+                    "apiKey": self.config["random_org_api_key"],
+                    "n": n,
+                    "length": length,
+                    "min": min,
+                    "max": max,
+                    "replacement": False,
+                },
             },
-        }).json()
+        ).json()
 
         if "result" in response:
             return [sorted(x) for x in response["result"]["random"]["data"]]
         else:
-            raise RuntimeError(
-                f"random.org API error: {response['error']['message']}")
+            raise RuntimeError(f"random.org API error: {response['error']['message']}")
 
     def validate_lottery_ticket_packs(self):
         """Throws error if a lottery ticket pack references a game which is not defined"""
-        lottery_game_names = [x["game_name"]
-                              for x in self.config["lottery_game_definitions"]]
+        lottery_game_names = [
+            x["game_name"] for x in self.config["lottery_game_definitions"]
+        ]
 
         for lottery_ticket_pack in self.config["lottery_ticket_packs"]:
             for element in lottery_ticket_pack["elements"]:
                 if element["game_name"] not in lottery_game_names:
                     raise ValueError(
-                        f"Error in config.json: game \"{element['type_name']}\" is not defined")
+                        f"Error in config.json: game \"{element['type_name']}\" is not defined"
+                    )
 
     def sum_tickets_per_game(self):
         """Returns a dictionary with the summary of tickets for each game type
@@ -109,7 +118,8 @@ class LotteryRandom:
 
         for game_name in tickets_per_game:
             game_definition = next(
-                x for x in self.config["lottery_game_definitions"]
+                x
+                for x in self.config["lottery_game_definitions"]
                 if x["game_name"] == game_name
             )
 
@@ -120,7 +130,7 @@ class LotteryRandom:
                     tickets_per_game[game_name],
                     drawing_set["n"],
                     drawing_set["min"],
-                    drawing_set["max"]
+                    drawing_set["max"],
                 )
 
                 filled_drawing_sets.append(filled_drawing_set)
@@ -135,13 +145,14 @@ class LotteryRandom:
         Copies and extends the config attribute's each lottery_ticket_packs member's
         each elements member with a tickets: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
         """
-        filled_lottery_ticket_packs = deepcopy(
-            self.config["lottery_ticket_packs"])
+        filled_lottery_ticket_packs = deepcopy(self.config["lottery_ticket_packs"])
 
         for lottery_ticket_pack in filled_lottery_ticket_packs:
             for element in lottery_ticket_pack["elements"]:
                 element["random_tickets"] = []
-                filled_drawing_sets_of_game = filled_drawing_sets_per_game[element["game_name"]]
+                filled_drawing_sets_of_game = filled_drawing_sets_per_game[
+                    element["game_name"]
+                ]
 
                 for i in range(element["number_of_random_tickets"]):
                     current_ticket = []
@@ -155,26 +166,33 @@ class LotteryRandom:
         return filled_lottery_ticket_packs
 
     def merge_random_and_permanent_tickets(self, random_filled_lottery_ticket_packs):
-        """Merges permanent numbers to random numbers, and returns the merged set.
-        """
+        """Merges permanent numbers to random numbers, and returns the merged set."""
         merged_lottery_ticket_packs = deepcopy(random_filled_lottery_ticket_packs)
 
         for lottery_ticket_pack in merged_lottery_ticket_packs:
             for element in lottery_ticket_pack["elements"]:
-                element["tickets"] = element["random_tickets"] + element["permanent_tickets"]
+                element["tickets"] = (
+                    element["random_tickets"] + element["permanent_tickets"]
+                )
 
-        return merged_lottery_ticket_packs;
+        return merged_lottery_ticket_packs
 
     def fill_lottery_ticket_packs(self):
         """Fills all lottery tickets with random numbers, merges permanent numbers to them,
         then returns them in the same way as the configuration file is nested within lottery_ticket_packs.
         """
         tickets_per_game = self.sum_tickets_per_game()
-        random_filled_drawing_sets_per_game = self.generate_random_filled_drawing_sets_per_game(
-            tickets_per_game)
-        random_filled_lottery_ticket_packs = self.fill_lottery_ticket_packs_by_drawing_sets(
-            random_filled_drawing_sets_per_game)
-        merged_lottery_ticket_packs = self.merge_random_and_permanent_tickets(random_filled_lottery_ticket_packs)
+        random_filled_drawing_sets_per_game = (
+            self.generate_random_filled_drawing_sets_per_game(tickets_per_game)
+        )
+        random_filled_lottery_ticket_packs = (
+            self.fill_lottery_ticket_packs_by_drawing_sets(
+                random_filled_drawing_sets_per_game
+            )
+        )
+        merged_lottery_ticket_packs = self.merge_random_and_permanent_tickets(
+            random_filled_lottery_ticket_packs
+        )
 
         return merged_lottery_ticket_packs
 
@@ -191,66 +209,67 @@ class LotteryRandom:
                 game_name = element["game_name"]
                 tickets = element["tickets"]
 
-                joined = '[' + '], ['.join(
-                    [' | '.join(
-                        [', '.join(
-                            [str(x) for x in drawing_set]
-                        ) for drawing_set in ticket]
-                    ) for ticket in tickets]
-                ) + ']'
+                joined = (
+                    "["
+                    + "], [".join(
+                        [
+                            " | ".join(
+                                [
+                                    ", ".join([str(x) for x in drawing_set])
+                                    for drawing_set in ticket
+                                ]
+                            )
+                            for ticket in tickets
+                        ]
+                    )
+                    + "]"
+                )
 
                 joined_tickets_per_game.append(f"{game_name}: {joined}")
 
-            lottery_ticket_pack["as_string"] = "\n".join(
-                joined_tickets_per_game)
+            lottery_ticket_pack["as_string"] = "\n".join(joined_tickets_per_game)
 
         return stringified_lottery_ticket_packs
 
     def email_stringified_lottery_ticket_packs(self, stringified_lottery_ticket_packs):
-        """Sends the stringified tickets to the provided addresses in the configuration file
-        """
+        """Sends the stringified tickets to the provided addresses in the configuration file"""
         email_from = self.config["email_from"]
 
-        to_emails = []
         for lottery_ticket_pack in stringified_lottery_ticket_packs:
             for email_to in lottery_ticket_pack["email_to"]:
-                to_emails.append(
-                    To(
-                        email=email_to["email"],
-                        name=email_to["name"],
-                        substitutions={
-                            "-recipientName-": email_to["name"],
-                            "-stringifiedLotteryTicketPack-": lottery_ticket_pack["as_string"]
-                        }
-                    )
-                )
+                subject = f"Lottery numbers for {email_to["name"]}"
 
-        subject = "Lottery numbers for -recipientName-"
+                plainTextContent = f"""{subject}
 
-        content = f"{subject}" + \
-            "\n\n" + \
-            "-stringifiedLotteryTicketPack-" \
-            "\n\n" + \
-            f"Timestamp: {datetime.utcnow().strftime('%Y/%m/%d %H:%M:%S')} (UTC)" \
-            "\n\n" + \
-            f"This email was sent you by {email_from['name']} " + \
-            f"({email_from['email']}) using https://github.com/luczsoma/lottery-random."
+{lottery_ticket_pack["as_string"]}
 
-        message = Mail(
-            from_email=(email_from["email"],
-                        email_from["name"]),
-            to_emails=to_emails,
-            subject=subject,
-            plain_text_content=content,
-            is_multiple=True)
+Timestamp: {datetime.now(timezone.utc).strftime('%Y/%m/%d %H:%M:%S')} (UTC)
 
-        self.sendgrid_api_client.send(message)
+This email was sent you by {email_from['name']} ({email_from['email']}) using https://github.com/luczsoma/lottery-random.
+"""
+
+                message = {
+                    "content": {
+                        "subject": subject,
+                        "plainText": plainTextContent,
+                    },
+                    "recipients": {
+                        "to": [
+                            {
+                                "address": email_to["email"],
+                                "displayName": email_to["name"],
+                            }
+                        ]
+                    },
+                    "senderAddress": "lottery-random@luczsoma.hu",
+                }
+
+                self.azure_email_client.begin_send(message)
 
     def run(self):
         self.validate_lottery_ticket_packs()
         filled_tickets = self.fill_lottery_ticket_packs()
-        stringified_tickets = self.stringify_lottery_ticket_packs(
-            filled_tickets)
+        stringified_tickets = self.stringify_lottery_ticket_packs(filled_tickets)
         self.email_stringified_lottery_ticket_packs(stringified_tickets)
 
 

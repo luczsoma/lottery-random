@@ -1,6 +1,7 @@
 {
   "random_org_api_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "sendgrid_api_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "azure_email_endpoint": "https://…/",
+  "azure_email_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "email_from": {
     "email": "yourserver@yourdomain.com",
     "name": "Your Name"

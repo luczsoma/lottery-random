@@ -11,9 +11,15 @@
       "type": "string",
       "minLength": 1
     },
-    "sendgrid_api_key": {
-      "title": "SendGrid API key",
-      "description": "Your API key for the SendGrid API.",
+    "azure_email_endpoint": {
+      "title": "Azure Communication Services endpoint",
+      "description": "The API endpoint of your Azure Communication Services instance.",
+      "type": "string",
+      "minLength": 1
+    },
+    "azure_email_key": {
+      "title": "Azure Communication Services key",
+      "description": "The API key of your Azure Communication Services instance.",
       "type": "string",
       "minLength": 1
     },
@@ -188,7 +194,8 @@
   },
   "required": [
     "random_org_api_key",
-    "sendgrid_api_key",
+    "azure_email_endpoint",
+    "azure_email_key",
     "email_from",
     "lottery_game_definitions",
     "lottery_ticket_packs"
