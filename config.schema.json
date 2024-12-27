@@ -1,6 +1,6 @@
 {
-  "$id": "https://github.com/luczsoma/lottery-random/blob/master/config.schema.py",
-  "$schema": "http://json-schema.org/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/luczsoma/lottery-random/blob/main/config.schema.json",
   "title": "lottery-random configuration file schema",
   "description": "Your supplied config.json file for lottery-random must comply with this schema.",
   "type": "object",
@@ -8,112 +8,93 @@
     "random_org_api_key": {
       "title": "random.org API key",
       "description": "Your API key for the random.org API. The lottery-random MUST NOT be used with neither the free Developer nor the Non-Profit API key license: visit https://api.random.org/pricing for details.",
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     },
     "azure_email_endpoint": {
       "title": "Azure Communication Services endpoint",
-      "description": "The API endpoint of your Azure Communication Services instance.",
-      "type": "string",
-      "minLength": 1
+      "description": "The API endpoint of your Azure Communication Services instance",
+      "type": "string"
     },
     "azure_email_key": {
       "title": "Azure Communication Services key",
-      "description": "The API key of your Azure Communication Services instance.",
+      "description": "The API key of your Azure Communication Services instance",
+      "type": "string"
+    },
+    "sender_email": {
+      "title": "Sender email",
+      "description": "The email address that is configured in Azure Communication Services as the sender email",
       "type": "string",
-      "minLength": 1
+      "format": "email"
     },
-    "email_from": {
-      "title": "Email from",
-      "description": "This email address will be used as the sender address when emailing the lottery ticket packs.",
-      "type": "object",
-      "properties": {
-        "email": {
-          "title": "Email",
-          "description": "The email address of the sender",
-          "type": "string",
-          "format": "email"
-        },
-        "name": {
-          "title": "Name",
-          "description": "The name of the sender",
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "required": ["email", "name"],
-      "additionalProperties": false
+    "sender_name": {
+      "title": "Sender name",
+      "description": "The name that is configured in Azure Communication Services as the sender name",
+      "type": "string"
     },
-    "lottery_game_definitions": {
-      "title": "Lottery game definitions",
-      "description": "Define your lottery game definitions here.",
+    "games": {
+      "title": "Games",
+      "description": "An array of lottery game definitions",
       "type": "array",
       "items": {
-        "title": "Lottery game definition",
-        "description": "A lottery game definition describes a type of lottery game in general: with a name and one or more drawing sets with the number of drawn elements from the sets of numbers between min and max.",
+        "title": "Game",
+        "description": "Defines a type of lottery game with a name and one or more fields",
         "type": "object",
         "properties": {
-          "game_name": {
-            "title": "Game name",
-            "description": "Use this game name in the lottery_ticket_packs section to reference a particular game definition.",
-            "type": "string",
-            "minLength": 1
+          "name": {
+            "title": "Name",
+            "description": "Refer to a lottery game in the ticket_packs section by this name (must be unique within the games array)",
+            "type": "string"
           },
-          "drawing_sets": {
-            "title": "Drawing sets",
-            "description": "Define the drawing sets for the lottery game here.",
+          "fields": {
+            "title": "Fields",
+            "description": "An array of field definitions for a type of lottery game",
             "type": "array",
             "items": {
-              "title": "Drawing set",
-              "description": "A drawing set is a set of numbers between min and max (inclusive) to draw n unique numbers from.",
+              "title": "Field",
+              "description": "Players must choose n unique numbers between min and max, inclusive, from each field",
               "type": "object",
               "properties": {
                 "n": {
                   "title": "n",
-                  "description": "Draw n unique numbers from the drawing set.",
-                  "type": "integer",
-                  "minimum": 1
+                  "description": "This many numbers must be chosen from the field",
+                  "type": "integer"
                 },
                 "min": {
                   "title": "min",
-                  "description": "The lowest possible drawn value.",
-                  "type": "integer",
-                  "minimum": 1
+                  "description": "The lowest possible number that can be chosen from the field",
+                  "type": "integer"
                 },
                 "max": {
                   "title": "max",
-                  "description": "The highest possible drawn value.",
-                  "type": "integer",
-                  "minimum": 1
+                  "description": "The highest possible number that can be chosen from the field",
+                  "type": "integer"
                 }
               },
               "required": ["n", "min", "max"],
               "additionalProperties": false
-            },
-            "minItems": 1
+            }
           }
         },
-        "required": ["game_name", "drawing_sets"],
+        "required": ["name", "fields"],
         "additionalProperties": false
-      },
-      "minItems": 1
+      }
     },
-    "lottery_ticket_packs": {
-      "title": "Lottery ticket packs",
-      "description": "Define your lottery ticket packs here. A lottery ticket pack is one or more lottery tickets to be played (in any lottery games defined above) containing random numbers, sent to one or more given email addresses.",
+    "ticket_packs": {
+      "title": "Ticket packs",
+      "description": "An array of lottery ticket pack definitions",
       "type": "array",
       "items": {
-        "title": "Lottery ticket pack",
-        "description": "A set of lottery tickets with random numbers to be played, sent to one or more email addresses.",
+        "title": "Ticket pack",
+        "description": "Defines the elements of a lottery ticket pack and the recipients to sent it to",
         "type": "object",
         "properties": {
-          "email_to": {
-            "title": "Email to",
-            "description": "The lottery ticket pack will be sent to these email addresses.",
+          "recipients": {
+            "title": "Recipients",
+            "description": "An array of recipients",
             "type": "array",
             "items": {
-              "title": "Email to",
-              "description": "An email address where the lottery ticket pack will be sent.",
+              "title": "Recipient",
+              "description": "To whom the lottery ticket pack is sent",
               "type": "object",
               "properties": {
                 "email": {
@@ -125,51 +106,47 @@
                 "name": {
                   "title": "Name",
                   "description": "The name of the recipient",
-                  "type": "string",
-                  "minLength": 1
+                  "type": "string"
                 }
               },
               "required": ["email", "name"],
               "additionalProperties": false
-            },
-            "minItems": 1
+            }
           },
           "elements": {
-            "title": "Lottery tickets pack elements",
-            "description": "Define the number of lottery tickets to be played from a given lottery game.",
+            "title": "Elements",
+            "description": "Array of lottery ticket pack elements",
             "type": "array",
             "items": {
-              "title": "Lottery ticket configuration",
-              "description": "Define the number of lottery tickets to be played from a given lottery game.",
+              "title": "Element",
+              "description": "Defines the number of randomly generated tickets and the permanently played tickets for a defined lottery game",
               "type": "object",
               "properties": {
-                "game_name": {
-                  "title": "Game name",
-                  "description": "The name of the lottery game. Must be the game_name of a defined lottery game definition in lottery_game_definitions above.",
-                  "type": "string",
-                  "minLength": 1
+                "game": {
+                  "title": "Game",
+                  "description": "The name of a lottery game defined in the games section",
+                  "type": "string"
                 },
                 "number_of_random_tickets": {
-                  "title": "Number of tickets to be randomly generated",
-                  "description": "The number of tickets (to be randomly generated) to be played in this lottery game.",
-                  "type": "integer",
-                  "minimum": 1
+                  "title": "Number of random tickets",
+                  "description": "This many tickets will be randomly generated",
+                  "type": "integer"
                 },
                 "permanent_tickets": {
-                  "title": "Tickets to be played regularly, with permanent numbers",
-                  "description": "If a player has permanent numbers, it can be configured here, so it will also be sent in email, in addition to the rangomly generated tickets. The given tickets must conform to the game definition, and cannot contain duplicate numbers.",
+                  "title": "Permanent tickets",
+                  "description": "An array of permanent tickets",
                   "type": "array",
                   "items": {
                     "title": "Permament ticket",
-                    "description": "A ticket to be played containing permanent numbers.",
+                    "description": "A ticket to be played every time (must conform to the game definition)",
                     "type": "array",
                     "items": {
-                      "title": "Permanent drawing set",
-                      "description": "A drawing set of a permanent ticket.",
+                      "title": "Field",
+                      "description": "A field of a permanent ticket",
                       "type": "array",
                       "items": {
-                        "title": "Permanent number",
-                        "description": "A permanent number to be played in a permanent ticket.",
+                        "title": "Number",
+                        "description": "A number in a field of a permanent ticket",
                         "type": "number"
                       }
                     }
@@ -177,28 +154,27 @@
                 }
               },
               "required": [
-                "game_name",
+                "game",
                 "number_of_random_tickets",
                 "permanent_tickets"
               ],
               "additionalProperties": false
-            },
-            "minItems": 1
+            }
           }
         },
-        "required": ["email_to", "elements"],
+        "required": ["recipients", "elements"],
         "additionalProperties": false
-      },
-      "minItems": 1
+      }
     }
   },
   "required": [
     "random_org_api_key",
     "azure_email_endpoint",
     "azure_email_key",
-    "email_from",
-    "lottery_game_definitions",
-    "lottery_ticket_packs"
+    "sender_email",
+    "sender_name",
+    "games",
+    "ticket_packs"
   ],
   "additionalProperties": false
 }

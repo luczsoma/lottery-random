@@ -2,14 +2,12 @@
   "random_org_api_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "azure_email_endpoint": "https://…/",
   "azure_email_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "email_from": {
-    "email": "yourserver@yourdomain.com",
-    "name": "Your Name"
-  },
-  "lottery_game_definitions": [
+  "sender_email": "yourserver@yourdomain.com",
+  "sender_name": "Your Name",
+  "games": [
     {
-      "game_name": "Lottery 5",
-      "drawing_sets": [
+      "name": "Lottery 5",
+      "fields": [
         {
           "n": 5,
           "min": 1,
@@ -18,8 +16,8 @@
       ]
     },
     {
-      "game_name": "Lottery 6",
-      "drawing_sets": [
+      "name": "Lottery 6",
+      "fields": [
         {
           "n": 6,
           "min": 1,
@@ -28,8 +26,8 @@
       ]
     },
     {
-      "game_name": "EuroJackpot",
-      "drawing_sets": [
+      "name": "EuroJackpot",
+      "fields": [
         {
           "n": 5,
           "min": 1,
@@ -43,9 +41,9 @@
       ]
     }
   ],
-  "lottery_ticket_packs": [
+  "ticket_packs": [
     {
-      "email_to": [
+      "recipients": [
         {
           "email": "yourname@yourdomain.com",
           "name": "Your Name"
@@ -53,12 +51,12 @@
       ],
       "elements": [
         {
-          "game_name": "Lottery 5",
+          "game": "Lottery 5",
           "number_of_random_tickets": 1,
           "permanent_tickets": [[[3, 27, 42, 54, 87]]]
         },
         {
-          "game_name": "Lottery 6",
+          "game": "Lottery 6",
           "number_of_random_tickets": 2,
           "permanent_tickets": [
             [[9, 17, 23, 30, 41, 43]],
@@ -66,7 +64,7 @@
           ]
         },
         {
-          "game_name": "EuroJackpot",
+          "game": "EuroJackpot",
           "number_of_random_tickets": 1,
           "permanent_tickets": [
             [
@@ -82,20 +80,20 @@
       ]
     },
     {
-      "email_to": [
+      "recipients": [
         {
-          "email": "yourbrothersname@example.com",
-          "name": "Your Brother's Name"
+          "email": "yourfriendsname@yourfriendsdomain.com",
+          "name": "Your Friend’s Name"
         }
       ],
       "elements": [
         {
-          "game_name": "Lottery 5",
+          "game": "Lottery 5",
           "number_of_random_tickets": 2,
           "permanent_tickets": []
         },
         {
-          "game_name": "Lottery 6",
+          "game": "Lottery 6",
           "number_of_random_tickets": 1,
           "permanent_tickets": []
         }
