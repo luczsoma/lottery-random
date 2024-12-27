@@ -56,7 +56,7 @@ cp config.example.json config.json
 Fill the config file with your desired configuration, and you are ready to go. Run the following command to send randomly filled lottery tickets to the given email addresses:
 
 ```sh
-python lottery-random.py
+python src/lottery-random.py
 ```
 
 ## Running lottery-random periodically
