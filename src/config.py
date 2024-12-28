@@ -22,10 +22,10 @@ class Config:
     lottery_ticket_pack_definitions: list[LotteryTicketPackDefinition]
 
     def __init__(self) -> None:
-        with open("config.json") as config_json_file, open(
+        with open("config.json") as config_file, open(
             "config.schema.json"
         ) as config_schema_file:
-            config = load(config_json_file)
+            config = load(config_file)
             config_schema = load(config_schema_file)
             validate(config, config_schema)
 
