@@ -90,7 +90,7 @@ class Config:
             names_of_duplicate_games_in_elements = [
                 game_name
                 for game_name, number_of_occurrence in Counter(
-                    [c["game"] for c in lottery_ticket_pack_definition["elements"]]
+                    [e["game"] for e in lottery_ticket_pack_definition["elements"]]
                 ).items()
                 if number_of_occurrence > 1
             ]
