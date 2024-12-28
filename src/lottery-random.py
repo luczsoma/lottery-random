@@ -64,16 +64,14 @@ This email was sent you by {self.config.sender_name} ({self.config.sender_email}
                                     ].fields,
                                     self.random_org_api,
                                 )
-                                for _ in range(
-                                    game_configuration.number_of_random_tickets
-                                )
+                                for _ in range(element.number_of_random_tickets)
                             ]
-                            + game_configuration.permanent_tickets,
+                            + element.permanent_tickets,
                         )
                         for (
                             game_name,
-                            game_configuration,
-                        ) in lottery_ticket_pack_definition.game_configurations.items()
+                            element,
+                        ) in lottery_ticket_pack_definition.elements.items()
                     ]
                 ),
             )

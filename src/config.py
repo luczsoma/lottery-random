@@ -7,7 +7,7 @@ from lottery_game_definition import LotteryGameDefinition, FieldDefinition
 from lottery_ticket_pack_definition import (
     Recipient,
     LotteryTicketPackDefinition,
-    LotteryTicketGameConfiguration,
+    LotteryTicketPackDefinitionElement,
 )
 from lottery_ticket import LotteryTicket
 
@@ -109,7 +109,7 @@ class Config:
                     [
                         (
                             str(pack["game"]),
-                            LotteryTicketGameConfiguration(
+                            LotteryTicketPackDefinitionElement(
                                 pack["number_of_random_tickets"],
                                 [
                                     LotteryTicket([set(field) for field in ticket])

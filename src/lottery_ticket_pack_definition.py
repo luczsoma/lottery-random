@@ -4,7 +4,7 @@ from recipient import Recipient
 from lottery_ticket import LotteryTicket
 
 
-class LotteryTicketGameConfiguration:
+class LotteryTicketPackDefinitionElement:
     number_of_random_tickets: int
     permanent_tickets: list[LotteryTicket]
 
@@ -22,54 +22,54 @@ class LotteryTicketGameConfiguration:
         lottery_game_definition = lottery_game_definitions.get(game_name)
         if lottery_game_definition is None:
             raise RuntimeError(
-                f'Invalid lottery ticket pack configuration: no game definition named "{game_name}"'
+                f'Invalid lottery ticket pack element: no game definition named "{game_name}"'
             )
 
         if self.number_of_random_tickets == 0 and len(self.permanent_tickets) == 0:
             raise RuntimeError(
-                f'Invalid lottery ticket pack configuration for game "{game_name}": no tickets'
+                f'Invalid lottery ticket pack element for game "{game_name}": no tickets'
             )
 
         for permanent_ticket in self.permanent_tickets:
             if len(permanent_ticket.numbers) != len(lottery_game_definition.fields):
                 raise RuntimeError(
-                    f'Invalid lottery ticket pack configuration for game "{game_name}":'
-                    "at least one permanent ticket does not have as many drawing sets as it should"
+                    f'Invalid lottery ticket pack element for game "{game_name}":'
+                    "at least one permanent ticket does not have as many fields as it should"
                 )
 
-            for drawing_set, drawing_set_definition in zip(
+            for field, field_definition in zip(
                 permanent_ticket.numbers, lottery_game_definition.fields
             ):
-                if len(drawing_set) != drawing_set_definition.n:
+                if len(field) != field_definition.n:
                     raise RuntimeError(
-                        f'Invalid lottery ticket pack configuration for game "{game_name}":'
-                        "at least one permanent ticket's at least one drawing set does not have as many numbers as it should"
+                        f'Invalid lottery ticket pack element for game "{game_name}":'
+                        "at least one permanent ticket's at least one field does not have as many numbers as it should"
                     )
 
-                for number in drawing_set:
-                    if number < drawing_set_definition.min:
+                for number in field:
+                    if number < field_definition.min:
                         raise RuntimeError(
-                            f'Invalid lottery ticket pack configuration for game "{game_name}":'
-                            f"{number} should be greater than or equal to {drawing_set_definition.min}"
+                            f'Invalid lottery ticket pack element for game "{game_name}":'
+                            f"{number} should be greater than or equal to {field_definition.min}"
                         )
-                    if number > drawing_set_definition.max:
+                    if number > field_definition.max:
                         raise RuntimeError(
-                            f'Invalid lottery ticket pack configuration for game "{game_name}":'
-                            f"{number} should be less than or equal to {drawing_set_definition.max}"
+                            f'Invalid lottery ticket pack element for game "{game_name}":'
+                            f"{number} should be less than or equal to {field_definition.max}"
                         )
 
 
 class LotteryTicketPackDefinition:
     recipients: list[Recipient]
-    game_configurations: dict[str, LotteryTicketGameConfiguration]
+    elements: dict[str, LotteryTicketPackDefinitionElement]
 
     def __init__(
         self,
         recipients: list[Recipient],
-        game_configurations: dict[str, LotteryTicketGameConfiguration],
+        elements: dict[str, LotteryTicketPackDefinitionElement],
     ) -> None:
         self.recipients = recipients
-        self.game_configurations = game_configurations
+        self.elements = elements
 
     def validate(
         self, lottery_game_definitions: dict[str, LotteryGameDefinition]
@@ -91,15 +91,15 @@ class LotteryTicketPackDefinition:
                 f"Duplicate recipients: {[", ".join(emails_of_duplicate_recipients)]}"
             )
 
-        if len(self.game_configurations) == 0:
+        if len(self.elements) == 0:
             raise RuntimeError(
-                "Invalid lottery ticket pack definition: at least one definition has no pack configuration"
+                "Invalid lottery ticket pack definition: at least one definition has no elements"
             )
 
-        self.validate_game_configurations(lottery_game_definitions)
+        self.validate_elements(lottery_game_definitions)
 
-    def validate_game_configurations(
+    def validate_elements(
         self, lottery_game_definitions: dict[str, LotteryGameDefinition]
     ) -> None:
-        for game_name, game_configurations in self.game_configurations.items():
-            game_configurations.validate(game_name, lottery_game_definitions)
+        for game_name, element in self.elements.items():
+            element.validate(game_name, lottery_game_definitions)
