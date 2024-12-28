@@ -17,7 +17,7 @@ class LotteryTicket:
     ) -> "LotteryTicket":
         return LotteryTicket(
             [
-                random_org_api.get_true_random_integers(
+                random_org_api.get_unique_true_random_integers(
                     field.n, field.min, field.max
                 )
                 for field in fields
