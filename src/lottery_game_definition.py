@@ -28,15 +28,12 @@ class FieldDefinition:
 class LotteryGameDefinition:
     fields: list[FieldDefinition]
 
-    def __init__(self, drawing_sets: list[FieldDefinition]) -> None:
-        self.fields = drawing_sets
+    def __init__(self, fields: list[FieldDefinition]) -> None:
+        self.fields = fields
 
     def validate(self, game_name: str) -> None:
         if len(self.fields) == 0:
             raise RuntimeError(f'Invalid game definition "{game_name}": no fields')
 
-        self.validate_fields(game_name)
-
-    def validate_fields(self, game_name: str) -> None:
         for field in self.fields:
             field.validate(game_name)
