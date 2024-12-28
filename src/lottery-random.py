@@ -13,10 +13,39 @@ from random_org_api import RandomOrgApi
 
 class LotteryRandom:
     config: Config = Config()
+    random_org_api = RandomOrgApi(config.random_org_api_key)
     azure_email_client = EmailClient(
         config.azure_email_endpoint, AzureKeyCredential(config.azure_email_key)
     )
-    random_org_api = RandomOrgApi(config.random_org_api_key)
+
+    def create_lottery_ticket_packs(self) -> list[LotteryTicketPack]:
+        return [
+            LotteryTicketPack(
+                lottery_ticket_pack_definition.recipients,
+                dict(
+                    [
+                        (
+                            game_name,
+                            [
+                                LotteryTicket.generate_random(
+                                    self.config.lottery_game_definitions[
+                                        game_name
+                                    ].fields,
+                                    self.random_org_api,
+                                )
+                                for _ in range(element.number_of_random_tickets)
+                            ]
+                            + element.permanent_tickets,
+                        )
+                        for (
+                            game_name,
+                            element,
+                        ) in lottery_ticket_pack_definition.elements.items()
+                    ]
+                ),
+            )
+            for lottery_ticket_pack_definition in self.config.lottery_ticket_pack_definitions
+        ]
 
     def send_lottery_ticket_pack(self, lottery_ticket_pack: LotteryTicketPack) -> None:
         for recipient in lottery_ticket_pack.recipients:
@@ -50,35 +79,7 @@ This email was sent you by {self.config.sender_name} ({self.config.sender_email}
             self.azure_email_client.begin_send(message)  # type: ignore
 
     def run(self) -> None:
-        lottery_ticket_packs = [
-            LotteryTicketPack(
-                lottery_ticket_pack_definition.recipients,
-                dict(
-                    [
-                        (
-                            game_name,
-                            [
-                                LotteryTicket.generate_random(
-                                    self.config.lottery_game_definitions[
-                                        game_name
-                                    ].fields,
-                                    self.random_org_api,
-                                )
-                                for _ in range(element.number_of_random_tickets)
-                            ]
-                            + element.permanent_tickets,
-                        )
-                        for (
-                            game_name,
-                            element,
-                        ) in lottery_ticket_pack_definition.elements.items()
-                    ]
-                ),
-            )
-            for lottery_ticket_pack_definition in self.config.lottery_ticket_pack_definitions
-        ]
-
-        for lottery_ticket_pack in lottery_ticket_packs:
+        for lottery_ticket_pack in self.create_lottery_ticket_packs():
             self.send_lottery_ticket_pack(lottery_ticket_pack)
 
 
