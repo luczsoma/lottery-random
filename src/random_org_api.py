@@ -11,7 +11,7 @@ class RandomOrgApi:
     def __init__(self, api_key: str) -> None:
         self.api_key = api_key
 
-    def get_true_random_integers(self, n: int, min: int, max: int) -> set[int]:
+    def get_unique_true_random_integers(self, n: int, min: int, max: int) -> set[int]:
         # simple rate limiting:
         # max. 10 requests / sec -> ensure waiting min. 100ms between API calls
         if self.last_random_org_api_call is not None:
