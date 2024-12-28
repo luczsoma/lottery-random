@@ -145,7 +145,7 @@ This can be configured as follows:
         {
           "n": 2,
           "min": 1,
-          "max": 10
+          "max": 12
         }
       ]
     }
@@ -156,7 +156,7 @@ This can be configured as follows:
 
 ### Lottery ticket packs
 
-A lottery ticket pack is a set of played lottery tickets sent to one or more email addresses. E.g., if you play one ticket of EuroJackpot and one ticket of Lottery 5, and your friend plays one ticket of Lottery 5 and two tickets of Lottery 6 each week, you define two separate lottery ticket packs, which will be sent to you and your friends separately. You can also configure permanent tickets numbers to be played regularly. Permanent tickets must conform to the game definition, and cannot contain duplicate numbers.
+A lottery ticket pack is a set of played lottery tickets sent to one or more email addresses. E.g., if you play one ticket of EuroJackpot and one ticket of Lottery 5, and your friend plays one ticket of Lottery 5 and two tickets of Lottery 6 each week, you define two separate lottery ticket packs, which will be sent to you and your friend separately. You can also configure permanent tickets to be played regularly. Permanent tickets must conform to the game definition, and cannot contain duplicate numbers.
 
 Lottery ticket packs can be configured as follows:
 
@@ -226,7 +226,7 @@ Lottery ticket packs can be configured as follows:
 }
 ```
 
-You can send the same lottery ticket pack to multiple addresses with setting the configuration as follows. Please note that the `recipients.name` attribute will be visible in the email in the following form: "True random lottery numbers for {recipients.name}".
+You can send the same lottery ticket pack to multiple recipients with setting the configuration as follows. Please note that the `recipients.name` attribute will be visible in the email in the following form: "True random lottery numbers for {recipients.name}".
 
 ```json
 {
