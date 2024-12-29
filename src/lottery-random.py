@@ -73,7 +73,7 @@ This email was sent you by {self.config.sender_name} ({self.config.sender_email}
                         }
                     ]
                 },
-                "senderAddress": "lottery-random@luczsoma.hu",
+                "senderAddress": self.config.sender_email,
             }
 
             self.azure_email_client.begin_send(message)  # type: ignore
