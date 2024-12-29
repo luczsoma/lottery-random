@@ -9,7 +9,7 @@ class LotteryTicket:
         self.numbers = numbers
 
     def __str__(self) -> str:
-        return f"[{' | '.join([', '.join(sorted(list([str(number) for number in field]))) for field in self.numbers])}]"
+        return f"[{' | '.join([', '.join([str(number) for number in sorted(field)]) for field in self.numbers])}]"
 
     @staticmethod
     def generate_random(
