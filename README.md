@@ -226,7 +226,7 @@ Lottery ticket packs can be configured as follows:
 }
 ```
 
-You can send the same lottery ticket pack to multiple recipients with setting the configuration as follows. Please note that the `recipients.name` attribute will be visible in the email in the following form: "True random lottery numbers for {recipients.name}".
+You can send the same lottery ticket pack to multiple recipients with setting the configuration as follows. Please note that the `name` attribute of a recipient will be visible in the email in the following form: "True random lottery numbers for {name}".
 
 ```json
 {
