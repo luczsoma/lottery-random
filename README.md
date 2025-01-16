@@ -163,7 +163,7 @@ Lottery ticket packs can be configured as follows:
 ```json
 {
   // …
-  "lottery_ticket_packs": [
+  "ticket_packs": [
     {
       "recipients": [
         {
@@ -231,7 +231,7 @@ You can send the same lottery ticket pack to multiple recipients with setting th
 ```json
 {
   // …
-  "lottery_ticket_packs": [
+  "ticket_packs": [
     {
       "recipients": [
         {
