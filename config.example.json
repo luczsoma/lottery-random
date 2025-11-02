@@ -43,6 +43,7 @@
   ],
   "ticket_packs": [
     {
+      "name": "Your Sunday pack",
       "recipients": [
         {
           "email": "yourname@yourdomain.com",
@@ -80,6 +81,32 @@
       ]
     },
     {
+      "name": "Your Wednesday pack",
+      "recipients": [
+        {
+          "email": "yourname@yourdomain.com",
+          "name": "Your Name"
+        }
+      ],
+      "elements": [
+        {
+          "game": "EuroJackpot",
+          "number_of_random_tickets": 1,
+          "permanent_tickets": [
+            [
+              [2, 5, 24, 39, 41],
+              [2, 8]
+            ],
+            [
+              [3, 4, 8, 9, 11],
+              [5, 9]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Your friend’s pack",
       "recipients": [
         {
           "email": "yourfriendsname@yourfriendsdomain.com",

@@ -60,14 +60,17 @@ class LotteryTicketPackDefinitionElement:
 
 
 class LotteryTicketPackDefinition:
+    name: str
     recipients: list[Recipient]
     elements: dict[str, LotteryTicketPackDefinitionElement]
 
     def __init__(
         self,
+        name: str,
         recipients: list[Recipient],
         elements: dict[str, LotteryTicketPackDefinitionElement],
     ) -> None:
+        self.name = name
         self.recipients = recipients
         self.elements = elements
 

@@ -88,6 +88,11 @@
         "description": "Defines the elements of a lottery ticket pack and the recipients to send it to",
         "type": "object",
         "properties": {
+          "name": {
+            "title": "Name",
+            "description": "The name of the ticket pack",
+            "type": "string"
+          },
           "recipients": {
             "title": "Recipients",
             "description": "An array of recipients",
@@ -162,7 +167,7 @@
             }
           }
         },
-        "required": ["recipients", "elements"],
+        "required": ["name", "recipients", "elements"],
         "additionalProperties": false
       }
     }

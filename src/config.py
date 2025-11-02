@@ -52,7 +52,7 @@ class Config:
         names_of_duplicate_game_definitions = [
             game_name
             for game_name, number_of_occurrence in Counter(
-                [d["name"] for d in config_lottery_game_definitions]
+                [g["name"] for g in config_lottery_game_definitions]
             ).items()
             if number_of_occurrence > 1
         ]
@@ -86,6 +86,16 @@ class Config:
         config_lottery_ticket_pack_definitions: Any,
         lottery_game_definitions: dict[str, LotteryGameDefinition],
     ) -> list[LotteryTicketPackDefinition]:
+        names_of_duplicate_lottery_ticket_pack_definitions = [
+            lottery_ticket_pack_definition_name
+            for lottery_ticket_pack_definition_name, number_of_occurrence in Counter(
+                [p["name"] for p in config_lottery_ticket_pack_definitions]
+            ).items()
+            if number_of_occurrence > 1
+        ]
+        if len(names_of_duplicate_lottery_ticket_pack_definitions) > 0:
+            raise RuntimeError("Duplicate entry for at least one lottery ticket pack")
+
         for lottery_ticket_pack_definition in config_lottery_ticket_pack_definitions:
             names_of_duplicate_games_in_elements = [
                 game_name
@@ -101,6 +111,7 @@ class Config:
 
         lottery_ticket_pack_definitions = [
             LotteryTicketPackDefinition(
+                lottery_ticket_pack_definition["name"],
                 [
                     Recipient(recipient["email"], recipient["name"])
                     for recipient in lottery_ticket_pack_definition["recipients"]

@@ -53,10 +53,20 @@ Clone the example configuration file into your config file:
 cp config.example.json config.json
 ```
 
-Fill the config file with your desired configuration, and you are ready to go. Run the following command to send randomly filled lottery tickets to the given email addresses:
+Fill the config file with your desired configuration, and you are ready to go.
+
+Run the following command to send randomly filled lottery tickets to the given email addresses:
 
 ```sh
 python src/lottery-random.py
+```
+
+Or use `lottery-random` from Python code:
+
+```python
+from lottery-random import LotteryRandom
+
+LotteryRandom().run()
 ```
 
 ## Running lottery-random periodically
@@ -73,7 +83,7 @@ Then enter the following:
 0 0 * * 0 python lottery-random.py
 ```
 
-This will run lottery-random every Sunday at midnight (according to your server's time zone).
+This will run `lottery-random` every Sunday at midnight (according to your server's time zone).
 
 ## Configuration options
 
@@ -165,6 +175,7 @@ Lottery ticket packs can be configured as follows:
   // …
   "ticket_packs": [
     {
+      "name": "Your Sunday pack"
       "recipients": [
         {
           "email": "yourname@yourdomain.com",
@@ -202,6 +213,32 @@ Lottery ticket packs can be configured as follows:
       ]
     },
     {
+      "name": "Your Wednesday pack",
+      "recipients": [
+        {
+          "email": "yourname@yourdomain.com",
+          "name": "Your Name"
+        }
+      ],
+      "elements": [
+        {
+          "game": "EuroJackpot",
+          "number_of_random_tickets": 1,
+          "permanent_tickets": [
+            [
+              [2, 5, 24, 39, 41],
+              [2, 8]
+            ],
+            [
+              [3, 4, 8, 9, 11],
+              [5, 9]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Your friend’s pack",
       "recipients": [
         {
           "email": "yourfriendsname@yourfriendsdomain.com",
@@ -233,6 +270,7 @@ You can send the same lottery ticket pack to multiple recipients with setting th
   // …
   "ticket_packs": [
     {
+      "name": "Your Sunday pack",
       "recipients": [
         {
           "email": "yourname@yourdomain.com",
@@ -277,3 +315,31 @@ You can send the same lottery ticket pack to multiple recipients with setting th
   // …
 }
 ```
+
+It is possible to filter lottery ticket packs by name. This is useful for playing lotteries having drawings at a different time (or multiple drawings within a week). You can configure separate lottery ticket packs for each combination, then filter at the invocation.
+
+Filter values need to have corresponding lottery ticket packs defined in `config.json`, otherwise a `RuntimeError` is raised. No filtering results in sending all configured lottery ticket packs.
+
+On the command line:
+
+```sh
+# run on Sunday
+python src/lottery-random.py -f/--lottery-ticket-pack-filter "Your Sunday pack" "Your friend's pack"
+# run on Wednesday
+python src/lottery-random.py -f/--lottery-ticket-pack-filter "Your Wednesday pack"
+```
+
+No filtering can be achieved by omitting the `-f/--lottery-ticket-pack-filter` argument. Specifying `-f/--lottery-ticket-pack-filter` with no value is not allowed.
+
+If using `lottery-random` from Python code, filtering can be done by passing a `set` to the `run` method:
+
+```python
+from lottery-random import LotteryRandom
+
+# run on Sunday
+LotteryRandom().run({"Your Sunday pack", "Your friend's pack"})
+# run on Wednesday
+LotteryRandom().run({"Your Wednesday pack"})
+```
+
+No filtering can be achieved by passing `None` or not passing an argument to `run`. Passing an empty set to `run` is not allowed.
