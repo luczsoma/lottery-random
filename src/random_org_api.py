@@ -13,7 +13,7 @@ class RandomOrgApi:
 
     def get_unique_true_random_integers(self, n: int, min: int, max: int) -> set[int]:
         # simple rate limiting:
-        # max. 10 requests / sec -> ensure waiting min. 100ms between API calls
+        # max. 10 requests / sec -> ensure waiting min. 100 ms between API calls
         if self.last_random_org_api_call is not None:
             elapsed = datetime.now(timezone.utc) - self.last_random_org_api_call
             if elapsed < self.min_wait:
