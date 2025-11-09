@@ -118,7 +118,7 @@ Provide your Azure Communication Services endpoint and API key in the `azure_ema
 
 ### Email sender name and address
 
-Provide the email address and name configured in Azure Communicationn Services in the `sender_email` and `sender_name` fields, respectively. Please note that these values will be visible in the email in the following form: "This email was sent you by {sender_name} ({sender_email}) using https://github.com/luczsoma/lottery-random.".
+Provide the email address and name configured in Azure Communication Services in the `sender_email` and `sender_name` fields, respectively. Please note that these values will be visible in the email in the following form: "This email was sent you by {sender_name} ({sender_email}) using https://github.com/luczsoma/lottery-random.".
 
 ```json
 {
@@ -337,9 +337,9 @@ If using `lottery-random` from Python code, filtering can be done by passing a `
 from lottery-random import LotteryRandom
 
 # run on Sunday
-LotteryRandom().run({"Your Sunday pack", "Your friend's pack"})
+LotteryRandom().run(lottery_ticket_pack_filter={"Your Sunday pack", "Your friend's pack"})
 # run on Wednesday
-LotteryRandom().run({"Your Wednesday pack"})
+LotteryRandom().run(lottery_ticket_pack_filter={"Your Wednesday pack"})
 ```
 
 No filtering can be achieved by passing `None` or not passing an argument to `run`. Passing an empty set to `run` is not allowed.
